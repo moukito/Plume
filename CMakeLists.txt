@@ -36,6 +36,8 @@ set(HEADERS
     "src/widgets/calendar/eventpage.h"
     "src/widgets/calendar/button.h"
     "src/widgets/mail/mail.h"
+        src/widgets/mail/ImapConnection.cpp
+        src/widgets/mail/ImapConnection.h
 )
 
 include_directories(
