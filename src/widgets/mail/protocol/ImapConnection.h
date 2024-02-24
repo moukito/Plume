@@ -9,29 +9,22 @@
 #include <QSslSocket>
 #include <vector>
 #include <QTimer>
+#include <queue>
 
 class ImapConnection : public QObject {
+
 Q_OBJECT
 
-public Q_SLOTS:
-
-    void readData();
-
-    void loginin();
-
-    void timeIsOut();
-
-private:
     using string = QByteArray;
+
 public:
     explicit ImapConnection(string &login, string &password, QObject *parent);
-
 
     string getData();
 
     void sendRequest(const QByteArray &request);
 
-    bool isReadyRead();
+    Q_SIGNAL void accessRead();
 
 private:
     static constexpr char mAddress[]{"zmail.insa-lyon.fr"};
@@ -42,9 +35,15 @@ private:
     string mData{""};
     static int mCode;
     QTimer *mTimer{new QTimer(this)};
+    std::queue<QByteArray> mQueue;
 
     static QByteArray code();
 
+    Q_SLOT void readData();
+
+    Q_SLOT void timeIsOut();
+
+    void uploadRequest(const QByteArray& request);
 };
 
 

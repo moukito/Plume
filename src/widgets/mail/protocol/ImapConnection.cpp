@@ -8,12 +8,13 @@ int ImapConnection::mCode{0};
 
 ImapConnection::ImapConnection(string &login, string &password, QObject *parent) : QObject{parent}, mLogin{login},
                                                                                    mPassword{password} {
-    connect(mSocket, SIGNAL(encrypted()), SLOT(loginin()));
-    connect(mSocket, SIGNAL(readyRead()), SLOT(readData()));
-    connect(mTimer, SIGNAL(timeout()), SLOT(timeIsOut()));
+    connect(mSocket, &QSslSocket::encrypted, this, [=]() {mSocket->write(code() + " " + "login " + mLogin + " " + mPassword + "\r\n");});
+    connect(mSocket, &QSslSocket::readyRead, this, &ImapConnection::readData);
+    connect(mTimer, &QTimer::timeout, this, &ImapConnection::timeIsOut);
 
     mSocket->connectToHostEncrypted(mAddress, mPort);
 
+    mTimer->setSingleShot(true);
     mTimer->start(5000);
 }
 
@@ -32,6 +33,12 @@ void ImapConnection::timeIsOut() {
     if (mData.isEmpty()) {
         //todo : error
         qDebug() << "time";
+    } else {
+        emit accessRead();
+        if (!mQueue.empty()) {
+            uploadRequest(mQueue.front());
+            mQueue.pop();
+        }
     }
 }
 
@@ -39,15 +46,16 @@ ImapConnection::string ImapConnection::getData() {
     return mData;
 }
 
-void ImapConnection::sendRequest(const QByteArray& request) {
+void ImapConnection::sendRequest(const QByteArray &request) {
+    mQueue.push(request);
+    if (!mTimer->isActive()) {
+        uploadRequest(mQueue.front());
+        mQueue.pop();
+    }
+}
+
+void ImapConnection::uploadRequest(const QByteArray& request) {
     mData = "";
     mSocket->write(code() + " " + request + "\r\n");
 }
 
-bool ImapConnection::isReadyRead() {
-    return !mData.isEmpty();
-}
-
-void ImapConnection::loginin() {
-    mSocket->write(code() + " " + "login " + mLogin + " " + mPassword + "\r\n");
-}

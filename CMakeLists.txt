@@ -24,6 +24,8 @@ set(SOURCES
     "src/widgets/calendar/eventpage.cpp"
     "src/widgets/calendar/button.cpp"
     "src/widgets/mail/mail.cpp"
+        src/widgets/mail/protocol/ImapConnection.cpp
+        src/widgets/mail/protocol/SmtpConnection.cpp
 )
 
 set(HEADERS
@@ -36,8 +38,8 @@ set(HEADERS
     "src/widgets/calendar/eventpage.h"
     "src/widgets/calendar/button.h"
     "src/widgets/mail/mail.h"
-        src/widgets/mail/ImapConnection.cpp
-        src/widgets/mail/ImapConnection.h
+        src/widgets/mail/protocol/ImapConnection.h
+        src/widgets/mail/protocol/SmtpConnection.h
 )
 
 include_directories(
