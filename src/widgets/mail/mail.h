@@ -3,7 +3,7 @@
 #include <QWidget>
 #include <QLabel>
 #include <QVBoxLayout>
-#include "protocol/ImapConnection.h"
+#include "ReceiveMail.h"
 
 class Mail : public QWidget {
 Q_OBJECT
@@ -13,7 +13,10 @@ public:
 
 private:
     QHBoxLayout *lay = nullptr;
-    ImapConnection *mImap;
+    QByteArray mLogin{""};
+    QByteArray mPassword{""};
+    ReceiveMail *mail{new ReceiveMail(mLogin, mPassword, this)};
+    QByteArray mData;
 
-    Q_SLOT void test();
+    Q_SLOT void retrieveData(QByteArray data);
 };

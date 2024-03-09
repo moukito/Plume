@@ -26,6 +26,8 @@ set(SOURCES
     "src/widgets/mail/mail.cpp"
         src/widgets/mail/protocol/ImapConnection.cpp
         src/widgets/mail/protocol/SmtpConnection.cpp
+        src/widgets/mail/ReceiveMail.cpp
+        src/widgets/mail/ReceiveMail.h
 )
 
 set(HEADERS
@@ -40,6 +42,8 @@ set(HEADERS
     "src/widgets/mail/mail.h"
         src/widgets/mail/protocol/ImapConnection.h
         src/widgets/mail/protocol/SmtpConnection.h
+        src/widgets/mail/ReceiveMail.cpp
+        src/widgets/mail/ReceiveMail.h
 )
 
 include_directories(

@@ -10,16 +10,19 @@ Mail::Mail(QWidget *parent)
     setProperty("class", "mail");
     setAttribute(Qt::WA_StyledBackground);
 
-    QByteArray login{""};
-    QByteArray password{""};
+    connect(mail, &ReceiveMail::dataReady, this, &Mail::retrieveData);
 
-    mImap = new ImapConnection(login, password, this);
+    mail->fetchLastMail(4);
+    mail->readMail(918);
 
-    connect(mImap, &ImapConnection::accessRead, this, &Mail::test);
-
-    mImap->sendRequest("select INBOX");
+    //mImap->sendRequest(R"(list "" "*")");
+    //mImap->sendRequest("select INBOX");
+    //mImap->sendRequest("search all");
+    //mImap->sendRequest("fetch 800 all");
+    //mImap->sendRequest("select drfts");
 }
 
-void Mail::test() {
-    qDebug() << mImap->getData();
+void Mail::retrieveData(QByteArray data) {
+    mData = data;
+    qDebug() << data;
 }

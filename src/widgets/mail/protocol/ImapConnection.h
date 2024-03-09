@@ -22,6 +22,8 @@ public:
 
     string getData();
 
+    QByteArray getCode();
+
     void sendRequest(const QByteArray &request);
 
     Q_SIGNAL void accessRead();

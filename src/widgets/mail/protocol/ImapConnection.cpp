@@ -4,29 +4,30 @@
 
 #include "ImapConnection.h"
 
-int ImapConnection::mCode{0};
+int ImapConnection::mCode{-1};
 
 ImapConnection::ImapConnection(string &login, string &password, QObject *parent) : QObject{parent}, mLogin{login},
                                                                                    mPassword{password} {
-    connect(mSocket, &QSslSocket::encrypted, this, [=]() {mSocket->write(code() + " " + "login " + mLogin + " " + mPassword + "\r\n");});
+    connect(mSocket, &QSslSocket::encrypted, this,
+            [=]() { mSocket->write(code() + " " + "login " + mLogin + " " + mPassword + "\r\n"); });
     connect(mSocket, &QSslSocket::readyRead, this, &ImapConnection::readData);
     connect(mTimer, &QTimer::timeout, this, &ImapConnection::timeIsOut);
 
     mSocket->connectToHostEncrypted(mAddress, mPort);
 
     mTimer->setSingleShot(true);
-    mTimer->start(5000);
+    mTimer->start(2000);
 }
 
 void ImapConnection::readData() {
     mData.append(mSocket->readAll());
     if (!(mTimer->isActive())) {
-        mTimer->start(10000);
+        mTimer->start(2000);
     }
 }
 
 QByteArray ImapConnection::code() {
-    return QByteArray::number(mCode++);
+    return QByteArray::number(++mCode);
 }
 
 void ImapConnection::timeIsOut() {
@@ -46,6 +47,10 @@ ImapConnection::string ImapConnection::getData() {
     return mData;
 }
 
+QByteArray ImapConnection::getCode() {
+    return QByteArray::number(mCode);
+}
+
 void ImapConnection::sendRequest(const QByteArray &request) {
     mQueue.push(request);
     if (!mTimer->isActive()) {
@@ -54,7 +59,7 @@ void ImapConnection::sendRequest(const QByteArray &request) {
     }
 }
 
-void ImapConnection::uploadRequest(const QByteArray& request) {
+void ImapConnection::uploadRequest(const QByteArray &request) {
     mData = "";
     mSocket->write(code() + " " + request + "\r\n");
 }
